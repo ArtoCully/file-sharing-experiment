@@ -1,13 +1,14 @@
 require("dotenv").config();
 const multer = require("multer");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const File = require("./models/File");
 
 const express = require("express");
 const app = express();
 
 mongoose.connect(process.env.DATABASE_URL);
+mongoose.set('strictQuery', false);
 
 const upload = multer({ dest: "uploads" });
 
@@ -15,7 +16,7 @@ const upload = multer({ dest: "uploads" });
 app.use(express.urlencoded({ extended: true }));
 
 // set view engine to EJS
-app.use("view engine", "ejs");
+app.set("view engine", "ejs");
 
 // ROUTES
 // set initial route to index
@@ -35,7 +36,7 @@ app.post("/upload", upload.single("file"), async (req, res) => {
 
   // if there is a password hash that shit
   if (req.body.password != null && req.body.password !== "") {
-    fileData.password = await bcrypt.hash(req.body.password, 10);
+    fileData.password = bcrypt.hashSync(req.body.password, 10);
   }
 
   // pass the fileData object to the mongoose
@@ -55,7 +56,7 @@ async function handleDownload(req, res) {
       return;
     }
 
-    if (!(await bcrypt.compare(req.body.password, file.password))) {
+    if (!(bcrypt.compareSync(req.body.password, file.password))) {
       res.render("password", { error: true })
       return;
     }

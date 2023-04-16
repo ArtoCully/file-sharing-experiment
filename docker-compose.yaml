@@ -1,18 +1,28 @@
 version: '3'
 services:
   node:
+    depends_on:
+      - mongodb
     restart: always
     build: .
+    environment:
+      - PORT=3000
+      - DATABASE_URL=mongodb://mongodb:27017/test
+    env_file:
+      - .env
     ports:
-      - 3000:3000
+      - "3000:3000"
     volumes:
       - ./:/code
-  mongo:
+    links:
+      - mongodb
+  mongodb:
     image: mongo
+    expose:
+      - 27017
     ports:
       - 27017:27017
     volumes:
       - mongodb:/data/db
 volumes:
   mongodb:
-
