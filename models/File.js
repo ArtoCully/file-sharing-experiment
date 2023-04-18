@@ -1,10 +1,3 @@
-// Create the initial
-// model of the File type
-// it will have the following:
-// - path
-// - originalName
-// - password
-// - downloadCount
 const mongoose = require("mongoose");
 
 const File = new mongoose.Schema({
