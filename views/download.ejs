@@ -5,6 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+      .hidden {
+        visibility: hidden;
+      }
+    </style>
   </head>
   <body>
 
@@ -24,11 +29,70 @@
         </div>
       <% } %>
 
-      <button style="grid-column: span 2;" type="submit">Download</button>
+      <button class="js-download-btn" style="grid-column: span 2;" type="submit">Download</button>
     </form>
 
     <% if (locals.success) { %>
-      <img src="<%= locals.imgPath %>" alt="An image" />
+      <input class="controls__input" id="name" type="text" value=""/>
+      <!-- <img src="<%= locals.imgPath %>" alt="An image" /> -->
+      <span class="js-image-src hidden" data-src="<%= locals.imgPath %>"></span>
+      <canvas id="imageCanvas"></canvas>
     <% } %>
+
+    <script>
+      // lets add a text
+      // to the image
+      var text_title ="Overlay text";
+      var canvas = document.getElementById('imageCanvas');
+      var ctx = canvas.getContext('2d');
+      var img = new Image();
+
+      window.addEventListener('load', DrawPlaceholder)
+      document.querySelector('.js-download-btn').addEventListener('click', () => {
+        console.log('js-download-btn clicked');
+        // Put setTimeout cause we dont have an api yet
+        // this is why things are dynamic and have apis to improve UX
+        setTimeout(() => {
+          console.log('DrawPlaceholder called on click');
+          DrawPlaceholder();
+        }, 3000);
+      });
+
+      function DrawPlaceholder() {
+          const src = document.querySelector('.js-image-src');
+
+          if (src) {
+            img.onload = function() {
+                DrawOverlay(img);
+                DrawText();
+                DynamicText(img)
+            };
+            img.src = 'https://unsplash.it/400/400/?random';
+          }
+      }
+
+      function DrawOverlay(img) {
+          ctx.drawImage(img,0,0);
+          ctx.fillStyle = 'rgba(30, 144, 255, 0.4)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function DrawText() {
+          ctx.fillStyle = "white";
+          ctx.textBaseline = 'middle';
+          ctx.font = "50px 'Montserrat'";
+          ctx.fillText(text_title, 400, 300);
+      }
+
+      function DynamicText(img) {
+        document.getElementById('name').addEventListener('keyup', function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          DrawOverlay(img);
+          DrawText();
+          text_title = this.value; // NOTE: remove dep on 'this' here
+          ctx.fillText(text_title, 50, 50);
+        });
+      }
+    </script>
   </body>
 </html>
