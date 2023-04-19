@@ -12,6 +12,9 @@ mongoose.set('strictQuery', false);
 // use urlencoded middleware
 app.use(express.urlencoded({ extended: true }));
 
+// set static uploads file
+app.use("/uploads", express.static(__dirname + "/uploads"));
+
 // set view engine to EJS
 app.set("view engine", "ejs");
 

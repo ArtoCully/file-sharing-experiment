@@ -33,7 +33,10 @@ async function handlePostDownload(req, res, next) {
 
   await file.save();
 
-  console.log('fileDownloadCount', file.downloadCount);
+  // res.download(file.path, file.originalName);
 
-  res.download(file.path, file.originalName);
+  const imgPath = `/${file.path}`;
+  console.log('fileObject', file);
+  console.log('pathObject', imgPath);
+  res.render("download", { success: true, file: file, imgPath: imgPath });
 }
